@@ -15,7 +15,7 @@
 # Fabric release: v36.1.0
 
 terraform {
-  required_version = ">= 1.10.2"
+  required_version = ">= 1.8.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "fabric:tf:modules/iam-service-account:v36.1.0"
+    module_name = "fabric:tofu:modules/iam-service-account:v36.1.0"
   }
   provider_meta "google-beta" {
-    module_name = "fabric:tf:modules/iam-service-account:v36.1.0"
+    module_name = "fabric:tofu:modules/iam-service-account:v36.1.0"
   }
 }
