@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-variable "description" {
-  description = "Optional description."
-  type        = string
-  default     = null
-}
-
-variable "display_name" {
-  description = "Display name of the service account to create."
-  type        = string
-  default     = "Terraform-managed."
-}
 
 variable "generate_key" {
   description = "Generate a key for service account."
@@ -73,6 +61,12 @@ variable "name" {
   type        = string
 }
 
+variable "display_name" {
+  description = "Display name of the service account to create."
+  type        = string
+  default     = "Terraform-managed."
+}
+
 variable "prefix" {
   description = "Prefix applied to service account names."
   type        = string
@@ -82,16 +76,4 @@ variable "prefix" {
 variable "project_id" {
   description = "Project id where service account will be created."
   type        = string
-}
-
-variable "public_keys_directory" {
-  description = "Path to public keys data files to upload to the service account (should have `.pem` extension)."
-  type        = string
-  default     = ""
-}
-
-variable "service_account_create" {
-  description = "Create service account. When set to false, uses a data source to reference an existing service account."
-  type        = bool
-  default     = true
 }
