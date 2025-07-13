@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-variable "description" {
-  description = "Optional description."
-  type        = string
-  default     = null
-}
-
-variable "display_name" {
-  description = "Display name of the service account to create."
-  type        = string
-  default     = "Terraform-managed."
-}
-
 variable "generate_key" {
   description = "Generate a key for service account."
   type        = bool
@@ -36,79 +24,36 @@ variable "iam" {
   description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
-  nullable    = false
 }
 
 variable "iam_billing_roles" {
-  description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
+  description = "Project roles granted to the service account, by billing account id."
   type        = map(list(string))
   default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings on the service account. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
 }
 
 variable "iam_folder_roles" {
-  description = "Folder roles granted to this service account, by folder id. Non-authoritative."
+  description = "Project roles granted to the service account, by folder id."
   type        = map(list(string))
   default     = {}
-  nullable    = false
 }
 
 variable "iam_organization_roles" {
-  description = "Organization roles granted to this service account, by organization id. Non-authoritative."
+  description = "Project roles granted to the service account, by organization id."
   type        = map(list(string))
   default     = {}
-  nullable    = false
 }
 
 variable "iam_project_roles" {
-  description = "Project roles granted to this service account, by project id."
+  description = "Project roles granted to the service account, by project id."
   type        = map(list(string))
   default     = {}
-  nullable    = false
-}
-
-variable "iam_sa_roles" {
-  description = "Service account roles granted to this service account, by service account name."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
 
 variable "iam_storage_roles" {
-  description = "Storage roles granted to this service account, by bucket name."
+  description = "Storage roles granted to the service account, by bucket name."
   type        = map(list(string))
   default     = {}
-  nullable    = false
 }
 
 variable "name" {
@@ -116,29 +61,19 @@ variable "name" {
   type        = string
 }
 
+variable "display_name" {
+  description = "Display name of the service account to create."
+  type        = string
+  default     = "Terraform-managed."
+}
+
 variable "prefix" {
   description = "Prefix applied to service account names."
   type        = string
   default     = null
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty, please use null instead."
-  }
 }
 
 variable "project_id" {
   description = "Project id where service account will be created."
   type        = string
-}
-
-variable "public_keys_directory" {
-  description = "Path to public keys data files to upload to the service account (should have `.pem` extension)."
-  type        = string
-  default     = ""
-}
-
-variable "service_account_create" {
-  description = "Create service account. When set to false, uses a data source to reference an existing service account."
-  type        = bool
-  default     = true
 }
