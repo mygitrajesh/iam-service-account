@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,12 @@ locals {
       ]
     ]
   ])
-  key                = var.generate_key ? google_service_account_key.key["1"] : {}
+  # https://github.com/hashicorp/terraform/issues/22405#issuecomment-591917758
+  key = try(
+    var.generate_key
+    ? google_service_account_key.key["1"]
+    : map("", null)
+  , {})
   prefix             = var.prefix != null ? "${var.prefix}-" : ""
   resource_iam_email = "serviceAccount:${google_service_account.service_account.email}"
 }
