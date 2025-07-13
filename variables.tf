@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+variable "description" {
+  description = "Optional description."
+  type        = string
+  default     = null
+}
+
+variable "display_name" {
+  description = "Display name of the service account to create."
+  type        = string
+  default     = "Terraform-managed."
+}
+
 variable "generate_key" {
   description = "Generate a key for service account."
   type        = bool
@@ -61,12 +73,6 @@ variable "name" {
   type        = string
 }
 
-variable "display_name" {
-  description = "Display name of the service account to create."
-  type        = string
-  default     = "Terraform-managed."
-}
-
 variable "prefix" {
   description = "Prefix applied to service account names."
   type        = string
@@ -76,6 +82,12 @@ variable "prefix" {
 variable "project_id" {
   description = "Project id where service account will be created."
   type        = string
+}
+
+variable "public_keys_directory" {
+  description = "Path to public keys data files to upload to the service account (should have `.pem` extension)."
+  type        = string
+  default     = ""
 }
 
 variable "service_account_create" {
