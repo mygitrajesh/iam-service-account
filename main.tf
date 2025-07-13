@@ -15,55 +15,26 @@
  */
 
 locals {
-  iam_billing_pairs = flatten([
-    for entity, roles in var.iam_billing_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
-    ]
-  ])
-  iam_folder_pairs = flatten([
-    for entity, roles in var.iam_folder_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
-    ]
-  ])
-  iam_organization_pairs = flatten([
-    for entity, roles in var.iam_organization_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
-    ]
-  ])
-  iam_project_pairs = flatten([
-    for entity, roles in var.iam_project_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
-    ]
-  ])
-  iam_storage_pairs = flatten([
-    for entity, roles in var.iam_storage_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
-    ]
-  ])
   # https://github.com/hashicorp/terraform/issues/22405#issuecomment-591917758
   key = try(
     var.generate_key
     ? google_service_account_key.key["1"]
     : map("", null)
   , {})
-  prefix                    = var.prefix != null ? "${var.prefix}-" : ""
-  resource_email_static     = "${local.prefix}${var.name}@${var.project_id}.iam.gserviceaccount.com"
+  name                  = split("@", var.name)[0]
+  prefix                = var.prefix == null ? "" : "${var.prefix}-"
+  resource_email_static = "${local.prefix}${local.name}@${var.project_id}.iam.gserviceaccount.com"
+  resource_iam_email = (
+    local.service_account != null
+    ? "serviceAccount:${local.service_account.email}"
+    : local.resource_iam_email_static
+  )
   resource_iam_email_static = "serviceAccount:${local.resource_email_static}"
-  resource_iam_email        = local.service_account != null ? "serviceAccount:${local.service_account.email}" : local.resource_iam_email_static
+  service_account_id_static = "projects/${var.project_id}/serviceAccounts/${local.resource_email_static}"
   service_account = (
     var.service_account_create
-    ? try(google_service_account.service_account.0, null)
-    : try(data.google_service_account.service_account.0, null)
+    ? try(google_service_account.service_account[0], null)
+    : try(data.google_service_account.service_account[0], null)
   )
   service_account_credential_templates = {
     for file, _ in local.public_keys_data : file => jsonencode(
@@ -94,13 +65,13 @@ locals {
 data "google_service_account" "service_account" {
   count      = var.service_account_create ? 0 : 1
   project    = var.project_id
-  account_id = "${local.prefix}${var.name}"
+  account_id = "${local.prefix}${local.name}"
 }
 
 resource "google_service_account" "service_account" {
   count        = var.service_account_create ? 1 : 0
   project      = var.project_id
-  account_id   = "${local.prefix}${var.name}"
+  account_id   = "${local.prefix}${local.name}"
   display_name = var.display_name
   description  = var.description
 }
@@ -114,61 +85,4 @@ resource "google_service_account_key" "upload_key" {
   for_each           = local.public_keys_data
   service_account_id = local.service_account.email
   public_key_data    = each.value
-}
-
-resource "google_service_account_iam_binding" "roles" {
-  for_each           = var.iam
-  service_account_id = local.service_account.name
-  role               = each.key
-  members            = each.value
-}
-
-resource "google_billing_account_iam_member" "billing-roles" {
-  for_each = {
-    for pair in local.iam_billing_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  billing_account_id = each.value.entity
-  role               = each.value.role
-  member             = local.resource_iam_email
-}
-
-resource "google_folder_iam_member" "folder-roles" {
-  for_each = {
-    for pair in local.iam_folder_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  folder = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
-}
-
-resource "google_organization_iam_member" "organization-roles" {
-  for_each = {
-    for pair in local.iam_organization_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  org_id = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
-}
-
-resource "google_project_iam_member" "project-roles" {
-  for_each = {
-    for pair in local.iam_project_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  project = each.value.entity
-  role    = each.value.role
-  member  = local.resource_iam_email
-}
-
-resource "google_storage_bucket_iam_member" "bucket-roles" {
-  for_each = {
-    for pair in local.iam_storage_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  bucket = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
 }
