@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,36 +36,42 @@ variable "iam" {
   description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_billing_roles" {
-  description = "Project roles granted to the service account, by billing account id."
+  description = "Billing account roles granted to the service account, by billing account id. Non-authoritative."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_folder_roles" {
-  description = "Project roles granted to the service account, by folder id."
+  description = "Folder roles granted to the service account, by folder id. Non-authoritative."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_organization_roles" {
-  description = "Project roles granted to the service account, by organization id."
+  description = "Organization roles granted to the service account, by organization id. Non-authoritative."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_project_roles" {
   description = "Project roles granted to the service account, by project id."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_storage_roles" {
   description = "Storage roles granted to the service account, by bucket name."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "name" {
@@ -82,6 +88,12 @@ variable "prefix" {
 variable "project_id" {
   description = "Project id where service account will be created."
   type        = string
+}
+
+variable "public_keys_directory" {
+  description = "Path to public keys data files to upload to the service account (should have `.pem` extension)."
+  type        = string
+  default     = ""
 }
 
 variable "service_account_create" {
